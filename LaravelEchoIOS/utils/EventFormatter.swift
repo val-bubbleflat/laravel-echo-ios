@@ -3,19 +3,31 @@
 //  laravel-echo-ios
 //
 //  Created by valentin vivies on 21/07/2017.
-//  Copyright © 2017 Bubbleflat. All rights reserved.
 //
 
 import Foundation
 
+
+/// Event name formatter
 class EventFormatter {
     
+    
+    /// Event namespace.
     var namespace = ""
     
+    
+    /// Create a new class instance.
+    ///
+    /// - Parameter namespace: namespce
     init(namespace: String? = ""){
         self.setNamespace(value: namespace!)
     }
     
+    
+    /// Format the given event name.
+    ///
+    /// - Parameter event: event name
+    /// - Returns: formated event name
     func format(event: String) -> String {
         var e : String = ""
         if(!(event.hasPrefix("\\") || event.hasPrefix("."))){
@@ -27,6 +39,10 @@ class EventFormatter {
         return e.replacingOccurrences(of: ".", with: "\\")
     }
     
+    
+    /// Set the event namespace.
+    ///
+    /// - Parameter value: namespace
     func setNamespace(value: String? = "") {
         if let wrap = value {
             self.namespace = wrap;

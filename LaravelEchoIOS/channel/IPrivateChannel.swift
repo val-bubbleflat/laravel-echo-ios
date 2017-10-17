@@ -6,8 +6,17 @@
 import Foundation
 import SocketIO
 
+
+/// This protocol represents a private channel.
 protocol IPrivateChannel: IChannel{
 
+    
+    /// Trigger client event on the channel.
+    ///
+    /// - Parameters:
+    ///   - eventName: event name
+    ///   - data: data send
+    /// - Returns: the private channel itself
     func whisper(eventName: String, data: [AnyObject]) -> IPrivateChannel
 
 }
