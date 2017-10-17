@@ -1,11 +1,7 @@
-# Uncomment the next line to define a global platform for your project
+use_frameworks!
+inhibit_all_warnings!
 platform :ios, '9.0'
 
 target 'LaravelEchoIOS' do
-  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for LaravelEchoIOS
-  pod 'Socket.IO-Client-Swift'
-
+  pod 'Socket.IO-Client-Swift', '~> 12.1.2'
 end

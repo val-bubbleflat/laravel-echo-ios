@@ -34,7 +34,7 @@ class EventFormatter {
             e = self.namespace + "." + event
         } else {
             let index = event.index(event.startIndex, offsetBy: 1)
-            return event.substring(from: index)
+            return String(event[index...])
         }
         return e.replacingOccurrences(of: ".", with: "\\")
     }
