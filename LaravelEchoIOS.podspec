@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "LaravelEchoIOS"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
 
   s.summary      = "A wrapper for Laravel Echo in Swift"
   s.description  = "A wrapper for Laravel Echo with Socket.io in Swift by bubbleflat.com"
