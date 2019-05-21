@@ -8,7 +8,7 @@ import SocketIO
 
 
 /// This protocol represents a private channel.
-protocol IPrivateChannel: IChannel{
+public protocol IPrivateChannel: IChannel{
 
     
     /// Trigger client event on the channel.

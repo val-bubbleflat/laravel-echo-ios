@@ -7,7 +7,7 @@ import SocketIO
 
 
 ///  This protocol represents a presence channel.
-protocol IPresenceChannel: IChannel{
+public protocol IPresenceChannel: IChannel{
 
     
     /// Register a callback to be called anytime the member list changes.

@@ -11,7 +11,7 @@ class SocketIOConnector: IConnector {
 
     
     /// The Socket.io connection instance.
-    var socket: SocketIOClient?
+    var manager: SocketManager?
 
     
     /// Default connector options.
@@ -30,11 +30,14 @@ class SocketIOConnector: IConnector {
     ///
     /// - Parameter options: options
     init(options: [String: Any]){
-        self.socket = nil
+        self.manager = nil
         self.options = options
         self.channels = [:]
-        //self.setOptions(options: options)
-        self.connect()
+        if let url = self.options["host"] as? String {
+            let nurl: URL! = URL(string: url)
+            let socketConfig: SocketIOClientConfiguration = [.log(true), .compress]
+            self.manager = SocketManager(socketURL: nurl, config: socketConfig)
+        }
     }
 
     
@@ -48,13 +51,11 @@ class SocketIOConnector: IConnector {
     
     /// Create a fresh Socket.io connection.
     func connect(){
-        if let url = self.options["host"] as? String {
-            let nurl: URL! = URL(string: url)
-            let socketConfig: SocketIOClientConfiguration = [.log(true), .compress]
-            self.socket = SocketIOClient(socketURL: nurl, config: socketConfig)
-            self.socket?.connect(timeoutAfter: 5, withHandler: {
-                print("ERROR")
-            })
+        if let socket = manager?.defaultSocket {
+            socket.on(clientEvent: .connect) {data, ack in
+                print("socket connected")
+            }
+            socket.connect()
         }
     }
     
@@ -65,7 +66,7 @@ class SocketIOConnector: IConnector {
     ///   - event: event name
     ///   - callback: callback
     func on(event: String, callback: @escaping NormalCallback){
-        self.socket!.on(event, callback: callback)
+        self.manager!.defaultSocket.on(event, callback: callback)
     }
 
     
@@ -87,7 +88,7 @@ class SocketIOConnector: IConnector {
     /// - Returns: the channel
     func channel(name: String) -> IChannel{
         if(self.channels[name] == nil){
-            let socket: SocketIOClient! = self.socket
+            let socket: SocketIOClient! = self.manager?.defaultSocket
             self.channels[name] = SocketIoChannel(
                 socket: socket, name: name, options: self.options
             )
@@ -102,9 +103,9 @@ class SocketIOConnector: IConnector {
     /// - Returns: the private channel
     func privateChannel(name: String) -> IPrivateChannel{
         if(self.channels["private-" + name] == nil){
-            let socket: SocketIOClient! = self.socket
+            let socket: SocketIOClient! = self.manager?.defaultSocket
             self.channels["private-" + name] = SocketIOPrivateChannel(
-            socket: socket, name: "private-" + name, options: self.options
+                socket: socket, name: "private-" + name, options: self.options
             )
         }
         return self.channels["private-" + name]! as! IPrivateChannel
@@ -117,9 +118,9 @@ class SocketIOConnector: IConnector {
     /// - Returns: the presence channel
     func presenceChannel(name: String) -> IPresenceChannel{
         if(self.channels["presence-" + name] == nil){
-            let socket: SocketIOClient! = self.socket
+            let socket: SocketIOClient! = self.manager?.defaultSocket
             self.channels["presence-" + name] = SocketIOPresenceChannel(
-            socket: socket, name: "presence-" + name, options: self.options
+                socket: socket, name: "presence-" + name, options: self.options
             )
         }
         return self.channels["presence-" + name]! as! IPresenceChannel
@@ -144,8 +145,8 @@ class SocketIOConnector: IConnector {
     ///
     /// - Returns: the socket id
     func socketId() -> String {
-        if let socket: SocketIOClient = self.socket{
-            return socket.sid!
+        if let socket: SocketIOClient = self.manager?.defaultSocket{
+            return socket.sid
         }
         return ""
     }
@@ -153,7 +154,7 @@ class SocketIOConnector: IConnector {
     
     /// Disconnect from the Echo server.
     func disconnect(){
-        let socket: SocketIOClient! = self.socket
+        let socket: SocketIOClient! = self.manager?.defaultSocket
         socket.disconnect()
     }
     
