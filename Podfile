@@ -3,5 +3,5 @@ inhibit_all_warnings!
 platform :ios, '9.0'
 
 target 'LaravelEchoIOS' do
-  pod 'Socket.IO-Client-Swift', '~> 12.1.2'
+  pod 'Socket.IO-Client-Swift'
 end

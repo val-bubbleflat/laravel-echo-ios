@@ -9,7 +9,7 @@ import Foundation
 import SocketIO
 
 /// This class represents a basic channel protocol.
-protocol IChannel {
+public protocol IChannel {
     
     /// Listen for an event on the channel instance.
     ///
