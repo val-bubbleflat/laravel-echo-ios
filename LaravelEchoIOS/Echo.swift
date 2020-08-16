@@ -10,7 +10,7 @@ import SocketIO
 
 
 /// This class is the primary API for interacting with broadcasting.
-class Echo {
+public class Echo {
     
     
     /// The broadcasting connector.
