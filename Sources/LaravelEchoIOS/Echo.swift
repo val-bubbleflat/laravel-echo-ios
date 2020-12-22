@@ -35,8 +35,8 @@ public class Echo {
     ///
     /// - Parameter callback: callback
     public func connected(callback: @escaping NormalCallback){
-        self.on(event: "connect", callback: callback)
         self.connector.connect()
+        self.on(event: "connect", callback: callback)
     }
     
     
