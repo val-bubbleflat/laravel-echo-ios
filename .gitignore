@@ -16,6 +16,7 @@ Pods/
 ## Build generated
 build/
 DerivedData/
+.swiftpm/
 
 ## Various settings
 *.pbxuser
