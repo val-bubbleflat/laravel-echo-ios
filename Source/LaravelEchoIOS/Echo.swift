@@ -10,7 +10,7 @@ import SocketIO
 
 
 /// This class is the primary API for interacting with broadcasting.
-class Echo {
+public class Echo {
     
     
     /// The broadcasting connector.
@@ -24,7 +24,7 @@ class Echo {
     /// Create a new class instance.
     ///
     /// - Parameter options: options
-    init(options: [String: Any]){
+    public init(options: [String: Any]){
         self.options = options
         //No Pusher support
         self.connector = SocketIOConnector(options: self.options);
@@ -34,8 +34,9 @@ class Echo {
     /// when connected to the socket
     ///
     /// - Parameter callback: callback
-    func connected(callback: @escaping NormalCallback){
-        return self.on(event: "connect", callback: callback)
+    public func connected(callback: @escaping NormalCallback){
+        self.on(event: "connect", callback: callback)
+        self.connector.connect()
     }
     
     
@@ -44,7 +45,7 @@ class Echo {
     /// - Parameters:
     ///   - event: event name
     ///   - callback: callback
-    func on(event: String, callback: @escaping NormalCallback){
+    public func on(event: String, callback: @escaping NormalCallback){
         return self.connector.on(event: event, callback: callback)
     }
 
@@ -56,7 +57,7 @@ class Echo {
     ///   - event: event name
     ///   - callback: callback
     /// - Returns: the channel listened
-    func listen(channel: String, event: String, callback: @escaping NormalCallback) -> IChannel{
+    public func listen(channel: String, event: String, callback: @escaping NormalCallback) -> IChannel{
         return self.connector.listen(name: channel, event: event, callback: callback);
     }
 
@@ -65,7 +66,7 @@ class Echo {
     ///
     /// - Parameter channel: channel name
     /// - Returns: the channel
-    func channel(channel: String) -> IChannel {
+    public func channel(channel: String) -> IChannel {
         return self.connector.channel(name: channel);
     }
 
@@ -74,7 +75,7 @@ class Echo {
     ///
     /// - Parameter channel: channel name
     /// - Returns: the private channel
-    func privateChannel(channel: String) -> IChannel{
+    public func privateChannel(channel: String) -> IChannel{
         return self.connector.privateChannel(name:channel);
     }
 
@@ -83,7 +84,7 @@ class Echo {
     ///
     /// - Parameter channel: channel name
     /// - Returns: the private channel
-    func join(channel: String) -> IPresenceChannel {
+    public func join(channel: String) -> IPresenceChannel {
         return self.connector.presenceChannel(name:channel)
     }
     
@@ -91,7 +92,7 @@ class Echo {
     /// Leave the given channel.
     ///
     /// - Parameter channel: the channel name
-    func leave(channel: String) {
+    public func leave(channel: String) {
         self.connector.leave(name: channel)
     }
 
@@ -99,13 +100,13 @@ class Echo {
     /// Get the Socket ID for the connection.
     ///
     /// - Returns: the socket id
-    func socketId() -> String {
+    public func socketId() -> String {
         return self.connector.socketId()
     }
 
     
     /// Disconnect from the Echo server.
-    func disconnect(){
+    public func disconnect(){
         self.connector.disconnect();
     }
     
