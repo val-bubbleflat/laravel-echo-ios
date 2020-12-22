@@ -9,9 +9,7 @@ import SocketIO
 /// This class creates a connnector to a Socket.io server.
 class SocketIOConnector: IConnector {
 
-    
-    /// The Socket.io connection instance.
-    var socket: SocketIOClient?
+    private var socketManager: SocketManagerSpec?
 
     
     /// Default connector options.
@@ -30,7 +28,6 @@ class SocketIOConnector: IConnector {
     ///
     /// - Parameter options: options
     init(options: [String: Any]){
-        self.socket = nil
         self.options = options
         self.channels = [:]
         //self.setOptions(options: options)
@@ -48,11 +45,10 @@ class SocketIOConnector: IConnector {
     
     /// Create a fresh Socket.io connection.
     func connect(){
-        if let url = self.options["host"] as? String {
-            let nurl: URL! = URL(string: url)
+        if let url = URL(string: self.options["host"] as? String ?? "") {
             let socketConfig: SocketIOClientConfiguration = [.log(true), .compress]
-            self.socket = SocketIOClient(socketURL: nurl, config: socketConfig)
-            self.socket?.connect(timeoutAfter: 5, withHandler: {
+            self.socketManager = SocketManager(socketURL: url, config: socketConfig)
+            self.socketManager?.defaultSocket.connect(timeoutAfter: 5, withHandler: {
                 print("ERROR")
             })
         }
@@ -65,7 +61,7 @@ class SocketIOConnector: IConnector {
     ///   - event: event name
     ///   - callback: callback
     func on(event: String, callback: @escaping NormalCallback){
-        self.socket!.on(event, callback: callback)
+        self.socketManager?.defaultSocket.on(event, callback: callback)
     }
 
     
@@ -87,9 +83,9 @@ class SocketIOConnector: IConnector {
     /// - Returns: the channel
     func channel(name: String) -> IChannel{
         if(self.channels[name] == nil){
-            let socket: SocketIOClient! = self.socket
+            // TODO: Can Crash, needs refactor.
             self.channels[name] = SocketIoChannel(
-                socket: socket, name: name, options: self.options
+                socket: self.socketManager!.defaultSocket, name: name, options: self.options
             )
         }
         return self.channels[name]!
@@ -102,9 +98,9 @@ class SocketIOConnector: IConnector {
     /// - Returns: the private channel
     func privateChannel(name: String) -> IPrivateChannel{
         if(self.channels["private-" + name] == nil){
-            let socket: SocketIOClient! = self.socket
+            // TODO: Can Crash, needs refactor.
             self.channels["private-" + name] = SocketIOPrivateChannel(
-            socket: socket, name: "private-" + name, options: self.options
+                socket: self.socketManager!.defaultSocket, name: "private-" + name, options: self.options
             )
         }
         return self.channels["private-" + name]! as! IPrivateChannel
@@ -117,9 +113,9 @@ class SocketIOConnector: IConnector {
     /// - Returns: the presence channel
     func presenceChannel(name: String) -> IPresenceChannel{
         if(self.channels["presence-" + name] == nil){
-            let socket: SocketIOClient! = self.socket
+            // TODO: Can Crash, needs refactor.
             self.channels["presence-" + name] = SocketIOPresenceChannel(
-            socket: socket, name: "presence-" + name, options: self.options
+                socket: self.socketManager!.defaultSocket, name: "presence-" + name, options: self.options
             )
         }
         return self.channels["presence-" + name]! as! IPresenceChannel
@@ -144,17 +140,13 @@ class SocketIOConnector: IConnector {
     ///
     /// - Returns: the socket id
     func socketId() -> String {
-        if let socket: SocketIOClient = self.socket{
-            return socket.sid!
-        }
-        return ""
+        return self.socketManager?.defaultSocket.sid ?? ""
     }
 
     
     /// Disconnect from the Echo server.
     func disconnect(){
-        let socket: SocketIOClient! = self.socket
-        socket.disconnect()
+        socketManager?.defaultSocket.disconnect()
     }
     
     
